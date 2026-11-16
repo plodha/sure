@@ -9,6 +9,23 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
     @entry = entries(:transaction)
   end
 
+  test "show lists line items and says when they match the amount" do
+    Transaction::Item.create!(parent_transaction: @entry.transaction, name: "Whole milk", amount: @entry.amount.abs)
+
+    get transaction_url(@entry), headers: { "Turbo-Frame" => "drawer" }
+
+    assert_response :success
+    assert_select "li", text: /Whole milk/
+    assert_select "p", text: I18n.t("transactions.items.matches_amount")
+  end
+
+  test "show omits the items section when a transaction has no items" do
+    get transaction_url(@entry), headers: { "Turbo-Frame" => "drawer" }
+
+    assert_response :success
+    assert_select "p", text: I18n.t("transactions.items.matches_amount"), count: 0
+  end
+
   # Bills has always linked out to transactions. Until now nothing linked back,
   # so a transaction that settled a bill was a dead end. The link-back is part
   # of the preview-gated bills surface, so the viewer needs the flag.

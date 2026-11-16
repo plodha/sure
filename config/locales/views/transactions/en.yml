@@ -95,6 +95,7 @@ en:
       delete_title: Delete transaction
       details: Details
       attachments: Attachments
+      items: Items
       exclude: Exclude
       exclude_description: Excluded transactions will be removed from budgeting calculations and reports.
       activity_type: Activity Type
@@ -414,6 +415,11 @@ en:
         toggle_selection_checkboxes: Toggle all checkboxes
         search_placeholder: "Search transactions ..."
         filter: "Filter"
+    items:
+      quantity_at_price: "%{quantity} × %{price}"
+      total: Total
+      matches_amount: Items add up to the transaction amount
+      differs_from_amount: "Items differ from the transaction amount by %{difference}"
     attachments:
       cannot_exceed: "Cannot exceed %{count} attachments per transaction"
       uploaded_one: "Attachment uploaded successfully"
