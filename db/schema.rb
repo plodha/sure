@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -2890,6 +2890,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_233000) do
     t.index ["status"], name: "index_trading212_items_on_status"
   end
 
+  create_table "transaction_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "amount", precision: 19, scale: 4, null: false
+    t.uuid "category_id"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.decimal "quantity", precision: 19, scale: 4, default: "1.0", null: false
+    t.decimal "tax_amount", precision: 19, scale: 4
+    t.uuid "transaction_id", null: false
+    t.decimal "unit_price", precision: 19, scale: 4
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_transaction_items_on_category_id"
+    t.index ["transaction_id"], name: "index_transaction_items_on_transaction_id"
+  end
+
   create_table "transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "category_id"
     t.datetime "created_at", null: false
@@ -3318,6 +3333,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_233000) do
   add_foreign_key "trades", "securities"
   add_foreign_key "trading212_accounts", "trading212_items"
   add_foreign_key "trading212_items", "families"
+  add_foreign_key "transaction_items", "categories", on_delete: :nullify
+  add_foreign_key "transaction_items", "transactions", on_delete: :cascade
   add_foreign_key "transactions", "categories", on_delete: :nullify
   add_foreign_key "transactions", "merchants"
   add_foreign_key "transactions", "transfers"

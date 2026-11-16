@@ -1,0 +1,35 @@
+<%# locals: (transaction:) %>
+<% currency = transaction.entry.currency %>
+<div class="space-y-3">
+  <ul>
+    <% transaction.items.each do |item| %>
+      <li class="flex items-start justify-between gap-4 border-b border-primary py-2 text-sm last:border-b-0">
+        <div class="min-w-0">
+          <p class="text-primary truncate"><%= item.name %></p>
+          <% if item.unit_price.present? %>
+            <p class="text-xs text-secondary">
+              <%= t(".quantity_at_price",
+                    quantity: number_with_precision(item.quantity, strip_insignificant_zeros: true),
+                    price: Money.new(item.unit_price, currency).format) %>
+            </p>
+          <% end %>
+        </div>
+        <span class="shrink-0 text-primary"><%= Money.new(item.amount, currency).format %></span>
+      </li>
+    <% end %>
+  </ul>
+
+  <div class="flex items-center justify-between text-sm font-medium text-primary">
+    <span><%= t(".total") %></span>
+    <span><%= Money.new(transaction.items_total, currency).format %></span>
+  </div>
+
+  <% if transaction.items_match_amount? %>
+    <p class="text-xs text-success"><%= t(".matches_amount") %></p>
+  <% else %>
+    <p class="text-xs text-warning">
+      <%= t(".differs_from_amount",
+            difference: Money.new((transaction.entry.amount.abs - transaction.items_total).abs, currency).format) %>
+    </p>
+  <% end %>
+</div>
